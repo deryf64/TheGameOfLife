@@ -42,6 +42,8 @@ export class GameOfLife {
 
 		this.positionOutput = null;
 
+		this.maskA = {x:false, y:false};
+
 		this.init();
 	}
 
@@ -89,18 +91,78 @@ export class GameOfLife {
 		}
 	}
 
+	drawArea(aX, aY, bX, bY) {
+		const deltaSize = this.size * this.zoom;
+
+		const aXp = aX * deltaSize - this.offsetX;
+		const aYp = aY * deltaSize - this.offsetY;
+		const bXp = (bX+1) * deltaSize - this.offsetX;
+		const bYp = (bY+1) * deltaSize - this.offsetY;
+
+		this.context.lineWidth = (this.borderWidth * 2).toString();
+		this.context.strokeStyle = 'red';
+		this.context.beginPath();
+		this.context.rect(aXp, aYp, bXp - aXp, bYp - aYp);
+		this.context.stroke();
+	}
+
 	onClick(e) {
 		e.preventDefault();
 
-		if (this.key.shift) {
-			return;
-		};
-
 		const cell = this.calcCellCoords(e.clientX, e.clientY);
 
-		if (cell.x >= 0 && cell.x < this.matrixWidth && cell.y >= 0 && cell.y < this.matrixHeight) {
-			this.setCell(cell.x, cell.y);
-			this.update();
+		if (this.key.shift) {
+			if (this.maskA.x == false || this.maskA.y == false) {
+
+				this.maskA.x = cell.x;
+				this.maskA.y = cell.y;
+
+				let lastPos = [NaN, NaN];
+
+				this.canvas.onmousemove = (e) => {
+					const cell = this.calcCellCoords(e.clientX, e.clientY);
+
+					const a = {
+						x: this.maskA.x,
+						y: this.maskA.y,
+					}
+
+					let c;
+					if (cell.x < a.x) {
+						c = a.x;
+						a.x = cell.x;
+						cell.x = c;
+					}
+					if (cell.y < a.y) {
+						c = a.y;
+						a.y = cell.y;
+						cell.y = c;
+					}
+
+					if (cell.x !== lastPos[0] || cell.y !== lastPos[1]) {
+						this.update();
+						this.drawArea(a.x, a.y, cell.x, cell.y);
+
+						lastPos[0] = cell.x;
+						lastPos[1] = cell.y;
+					}
+				};
+			} else {
+				this.canvas.onmousemove = null;
+
+				const mask = this.saveMask(this.maskA.x, this.maskA.y, cell.x, cell.y);
+				console.info(JSON.stringify(mask));
+
+				this.maskA.x = false;
+				this.maskA.y = false;
+
+				this.update();
+			}
+		} else {
+			if (cell.x >= 0 && cell.x < this.matrixWidth && cell.y >= 0 && cell.y < this.matrixHeight) {
+				this.setCell(cell.x, cell.y);
+				this.update();
+			}
 		}
 	}
 
@@ -204,6 +266,35 @@ export class GameOfLife {
 		this.matrix = this.matrixTemp.slice();
 
 		this.update();
+	}
+
+	saveMask(aX, aY, bX, bY) {
+		const mask = [];
+
+		if (aX == bX && aY == bY) {
+			return;
+		}
+
+		let c;
+		if (bX < aX) {
+			c = aX;
+			aX = bX;
+			bX = c;
+		}
+		if (bY < aY) {
+			c = aY;
+			aY = bY;
+			bY = c;
+		}
+
+		for (var y = 0; y <= bY-aY; y++) {
+			mask.push([]);
+			for (var x = 0; x <= bX-aX; x++) {
+				mask[y].push(this.matrix[aY+y][aX+x] ? 1 : 0);
+			}
+		}
+
+		return mask;
 	}
 
 	clear() {
