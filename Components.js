@@ -39,14 +39,18 @@ export class GameOfLife {
 		this.key = {
 			shift: false
 		};
+
+		this.positionOutput = null;
+
+		this.init();
+	}
+
+	init() {
 		document.addEventListener('keydown', (e) => { this.onKey(e, false); });
 		document.addEventListener('keyup', (e) => { this.onKey(e, true); });
 
 		this.canvas.addEventListener('click', (e) => { this.onClick(e); });
 		this.canvas.addEventListener('wheel', (e) => { this.onZoom(e); });
-
-		// Output
-		this.positionOutput = null;
 
 		document.addEventListener('mousemove', (e) => {
 			if (!this.positionOutput) {
