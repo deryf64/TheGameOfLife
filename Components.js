@@ -123,25 +123,18 @@ export class GameOfLife {
 					const cell = this.calcCellCoords(e.clientX, e.clientY);
 
 					const a = {
-						x: this.maskA.x,
-						y: this.maskA.y,
+						x: this.maskA.x <= cell.x ? this.maskA.x : cell.x,
+						y: this.maskA.y <= cell.y ? this.maskA.y : cell.y,
 					}
 
-					let c;
-					if (cell.x < a.x) {
-						c = a.x;
-						a.x = cell.x;
-						cell.x = c;
-					}
-					if (cell.y < a.y) {
-						c = a.y;
-						a.y = cell.y;
-						cell.y = c;
+					const b = {
+						x: this.maskA.x >= cell.x ? this.maskA.x : cell.x,
+						y: this.maskA.y >= cell.y ? this.maskA.y : cell.y,
 					}
 
 					if (cell.x !== lastPos[0] || cell.y !== lastPos[1]) {
 						this.update();
-						this.drawArea(a.x, a.y, cell.x, cell.y);
+						this.drawArea(a.x, a.y, b.x, b.y);
 
 						lastPos[0] = cell.x;
 						lastPos[1] = cell.y;
