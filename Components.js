@@ -392,8 +392,10 @@ export class Interface {
 
 				for (const row in mask) {
 					for (const col in mask[row]) {
-						if (mask[row][col]) {
-							this.gameOfLife.drawCell(pos.x + parseInt(col), pos.y + parseInt(row), true, '#d00');
+						const x = pos.x + parseInt(col);
+						const y = pos.y + parseInt(row);
+						if (mask[row][col] && x >= 0 && x < this.gameOfLife.matrixWidth && y >= 0 && y < this.gameOfLife.matrixHeight) {
+							this.gameOfLife.drawCell(x, y, true, '#d00');
 						}
 					}
 				}
@@ -408,7 +410,12 @@ export class Interface {
 
 			for (const row in mask) {
 				for (const col in mask[row]) {
-					this.gameOfLife.matrix[pos.y + parseInt(row)][pos.x + parseInt(col)] = mask[row][col] ? true : false;
+					const x = pos.x + parseInt(col);
+					const y = pos.y + parseInt(row);
+
+					if (x >= 0 && x < this.gameOfLife.matrixWidth && y >= 0 && y < this.gameOfLife.matrixHeight) {
+						this.gameOfLife.matrix[y][x] = mask[row][col] ? true : false;
+					}
 				}
 			}
 
