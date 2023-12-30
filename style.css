@@ -35,3 +35,7 @@ body {
 	background-color: #444;
 	border-radius: 8px;
 }
+
+input[type="text"] {
+	color: black;
+}

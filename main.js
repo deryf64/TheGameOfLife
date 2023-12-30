@@ -59,3 +59,18 @@ document.getElementById('addCol').addEventListener('click', () => { iface.addCol
 document.getElementById('removeCol').addEventListener('click', () => { iface.removeCol(); });
 document.getElementById('addRow').addEventListener('click', () => { iface.addRow(); });
 document.getElementById('removeRow').addEventListener('click', () => { iface.removeRow(); });
+
+const mask = document.getElementById('mask');
+document.getElementById('loadMask').addEventListener('click', () => {
+	const data = JSON.parse(mask.value);
+
+	if (!Array.isArray(data)) {
+		throw new TypeError('mask must be an array');
+	}
+
+	if (data.find((e) => { console.log(e); return !Array.isArray(e); }) !== undefined) {
+		throw new Error('mask example: \n[\n\t[0,1,0],\n\t[0,0,1],\n\t[1,1,1]\n]');
+	}
+
+	iface.loadMask(data);
+})
