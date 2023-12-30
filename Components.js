@@ -70,8 +70,12 @@ export class GameOfLife {
 		}
 	}
 
-	setCell(x, y) {
-		this.matrix[y][x] = this.matrix[y][x] ? 0 : 1;
+	setCell(x, y, value=undefined) {
+		if (value !== undefined) {
+			this.matrix[y][x] = value;
+		} else {
+			this.matrix[y][x] = this.matrix[y][x] ? 0 : 1;
+		}
 	}
 
 	onClick(e) {
