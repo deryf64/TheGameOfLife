@@ -321,7 +321,6 @@ export class Interface {
 
 		this.gameOfLife.canvas.onclick = (e) => {
 			const pos = this.gameOfLife.calcCellCoords(e.clientX, e.clientY);
-			console.log(mask);
 
 			for (const row in mask) {
 				for (const col in mask[row]) {
