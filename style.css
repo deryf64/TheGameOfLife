@@ -1,0 +1,37 @@
+body {
+	width: 100vw;
+	height: 100vh;
+	margin: 0;
+	overflow: hidden;
+	font-family: Arial, sans-serif;
+}
+
+* {
+	color: white;
+}
+
+.tools {
+	position: absolute;
+	bottom: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 8px;
+	background-color: #444;
+	border-radius: 8px;
+}
+.tools button {
+	background-color: gray;
+}
+.tools button.active {
+	background-color: red;
+}
+
+.info {
+	position: absolute;
+	top: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 8px;
+	background-color: #444;
+	border-radius: 8px;
+}
