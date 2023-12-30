@@ -39,3 +39,10 @@ body {
 input[type="text"] {
 	color: black;
 }
+
+div#library {
+	position: absolute;
+	padding: 8px;
+	height: 100%;
+	background-color: #444;
+}

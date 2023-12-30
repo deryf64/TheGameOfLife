@@ -2,6 +2,7 @@ import {
 	GameOfLife,
 	Interface
 } from './Components.js';
+import { library } from './lib.js';
 
 const viewport = document.getElementById('viewport');
 
@@ -74,3 +75,23 @@ document.getElementById('loadMask').addEventListener('click', () => {
 
 	iface.loadMask(data);
 })
+
+// Load library
+
+const libraryBlock = document.getElementById('library');
+const libraryList = document.getElementById('lib-list');
+console.log(library);
+for (const el in library) {
+	console.log(el);
+	libraryList.innerHTML += `
+		<li>
+			<button class="lib-mask" data-mask="${JSON.stringify(library[el])}">${el}</button>
+		</li>
+	`;
+}
+
+for (const el of document.querySelectorAll('button.lib-mask')) {
+	el.onclick = (e)=>{
+		iface.loadMask(JSON.parse(e.target.getAttribute('data-mask')));
+	}
+}
