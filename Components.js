@@ -74,6 +74,13 @@ export class GameOfLife {
 		}
 	}
 
+	calcCellCoords(clientX, clientY) {
+		const k = this.size * this.zoom;
+		const x = Math.floor((clientX + this.offsetX) / k);
+		const y = Math.floor((clientY + this.offsetY) / k);
+		return {x, y};
+	}
+
 	setCell(x, y, value=undefined) {
 		if (value !== undefined) {
 			this.matrix[y][x] = value;
@@ -88,15 +95,11 @@ export class GameOfLife {
 		if (this.key.shift) {
 			return;
 		};
-		
-		const x = e.clientX + this.offsetX;
-		const y = e.clientY + this.offsetY;
 
-		const cellX = Math.floor(x / (this.size * this.zoom));
-		const cellY = Math.floor(y / (this.size * this.zoom));
+		const cell = this.calcCellCoords(e.clientX, e.clientY);
 
-		if (cellX >= 0 && cellX < this.matrixWidth && cellY >= 0 && cellY < this.matrixHeight) {
-			this.setCell(cellX, cellY);
+		if (cell.x >= 0 && cell.x < this.matrixWidth && cell.y >= 0 && cell.y < this.matrixHeight) {
+			this.setCell(cell.x, cell.y);
 			this.update();
 		}
 	}
@@ -140,13 +143,13 @@ export class GameOfLife {
 		}
 	}
 
-	drawCell(x, y, value=true) {
+	drawCell(x, y, value=true, color=this.cellColor) {
 		const deltaSize = this.size * this.zoom;
 
 		const frameX = x * deltaSize - this.offsetX;
 		const frameY = y * deltaSize - this.offsetY;
 
-		this.context.fillStyle = value ? this.cellColor : this.bgColor;
+		this.context.fillStyle = value ? color : this.bgColor;
 		this.context.fillRect(frameX, frameY, deltaSize, deltaSize);
 	}
 
@@ -292,5 +295,43 @@ export class Interface {
 		this.gameOfLife.matrixHeight -= quantity;
 
 		this.#update();
+	}
+
+	loadMask(mask) {
+		let lastPos = [NaN, NaN];
+
+		this.gameOfLife.canvas.onmousemove = (e) => {
+			const pos = this.gameOfLife.calcCellCoords(e.clientX, e.clientY);
+
+			if (pos.x !== lastPos[0] || pos.y !== lastPos[1]) {
+				this.#update();
+
+				for (const row in mask) {
+					for (const col in mask[row]) {
+						if (mask[row][col]) {
+							this.gameOfLife.drawCell(pos.x + parseInt(col), pos.y + parseInt(row), true, '#d00');
+						}
+					}
+				}
+
+				lastPos[0] = pos.x;
+				lastPos[1] = pos.y;
+			}
+		}
+
+		this.gameOfLife.canvas.onclick = (e) => {
+			const pos = this.gameOfLife.calcCellCoords(e.clientX, e.clientY);
+			console.log(mask);
+
+			for (const row in mask) {
+				for (const col in mask[row]) {
+					this.gameOfLife.matrix[pos.y + parseInt(row)][pos.x + parseInt(col)] = mask[row][col] ? true : false;
+				}
+			}
+
+			this.gameOfLife.canvas.onmousemove = null;
+			this.gameOfLife.canvas.onclick = null;
+			this.#update();
+		}
 	}
 }
